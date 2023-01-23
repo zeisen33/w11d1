@@ -14,6 +14,50 @@ function Form (props) {
 
     const [errors, setErrors] = useState([])
 
+    const validate = () => {
+        let errors = [];
+        const formats = [".com", ".net", ".org", ".gov", ".edu", ".io"]
+        if (user.name.length === 0) {
+            errors.push("Name can't be blank")
+        }
+
+        if(user.email.length === 0) {
+            errors.push("Email can't be blank");
+        }
+        let validEmail = false;
+        formats.forEach( el => {
+            if(user.email.includes(el)) validEmail = true;
+        })
+
+        if (!validEmail || !user.email.includes("@")){
+            errors.push("Invalid Email")
+        }
+        
+        const digits = ['1','2','3','4','5','6','7','8','9','0']
+        let validNumber = true;
+
+        user.phoneNumber.split("").forEach(n => {
+            if(!digits.includes(n)) validNumber = false;
+        })
+        if(user.phoneNumber){
+            if (user.phoneNumber.length !== 10 || !validNumber) {
+                errors.push("Invalid phone number")
+            }
+        }
+        if(!errors.includes("Invalid phone number") && !user.phoneType) {
+            errors.push("Select a phone type");
+        } 
+        else if(errors.includes("Invalid phone number") && !user.phoneType) {
+            errors.push("Select a phone type");
+        }
+
+        if(user.bio.length > 280) {
+            errors.push("Bio too long");
+        }
+
+        return errors;
+    }
+
     const handleChange = (field) => {
         return (e) => {
             console.log(e)
@@ -25,7 +69,8 @@ function Form (props) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let errors = [];
+        let errors = validate();
+
         console.log(user);
         if (errors.length) {
             setErrors(errors)
@@ -75,25 +120,24 @@ function Form (props) {
                 </label>
                 <br></br>
                 <label>Phone Type
-                    <select name="Phone Type">
+                    <select name="Phone Type" value= {user.phoneType} onChange={handleChange('phoneType')}>
+                        <option value="" selected disabled></option>
                         <option value="Home">Home</option>
                         <option value="Work">Work</option>
                         <option value="Mobile">Mobile</option>
                     </select>
                 </label>
                 <br></br>
-                <label>Staff 
-                    <input 
-                        type="radio"
-                        value="Instructor"
-                        name="staff"
-                    />
-                    <input
-                        type="radio"
-                        value="Student"
-                        name="staff"
-                    />
-                </label>
+                <input 
+                    type="radio"
+                    value="Instructor"
+                    name="staff"
+                /> Instructor
+                <input
+                    type="radio"
+                    value="Student"
+                    name="staff"
+                /> Student
                 <br></br>
                 <label>Bio
                     <textarea
